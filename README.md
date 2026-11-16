@@ -23,7 +23,17 @@ Or install the `pdf2excel` command itself:
 pip install .
 ```
 
-## Usage
+## Upload in your browser
+
+```bash
+python -m pdf2excel.web
+```
+
+Then open http://127.0.0.1:5000, drop in a PDF and click **Convert to Excel**. The `.xlsx` file downloads straight away. Press Ctrl+C in the terminal to stop the page.
+
+The page runs only on your own computer, so your PDFs are never sent anywhere else.
+
+## Command line
 
 ```bash
 pdf2excel report.pdf                      # writes report.xlsx next to it
