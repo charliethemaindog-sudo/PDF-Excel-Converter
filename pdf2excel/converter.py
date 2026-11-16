@@ -132,6 +132,18 @@ def _autosize(ws) -> None:
         ws.column_dimensions[get_column_letter(col)].width = min(max(width + 2, 8), 60)
 
 
+def rows_to_workbook(rows: list[list[object]], header: bool = True, title: str = "Sheet1") -> Workbook:
+    """Build a one-sheet workbook from rows, with a styled, frozen header row."""
+    wb = Workbook()
+    ws = wb.active
+    ws.title = title[:_MAX_SHEET_NAME]
+    _write_rows(ws, rows, 1, bold_first=header)
+    if header and len(rows) > 1:
+        ws.freeze_panes = "A2"
+    _autosize(ws)
+    return wb
+
+
 def convert(
     pdf_path: str | Path,
     output_path: str | Path | None = None,

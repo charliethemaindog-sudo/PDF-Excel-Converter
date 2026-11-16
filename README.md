@@ -1,6 +1,21 @@
 # PDF to Excel Converter
 
-Pulls the tables out of PDF files and saves them as Excel (`.xlsx`) workbooks.
+Turns pasted text or PDF tables into tidy Excel (`.xlsx`) spreadsheets.
+
+**Paste text:** copy rows from anywhere (a PDF, a web page, an email, Excel, a CSV) and paste them in. The page works out where the columns are, shows a preview and downloads it as Excel. It recognises:
+
+| You paste | It splits on |
+| --- | --- |
+| Rows copied from Excel or a web table | Tabs |
+| CSV | Commas (quoted values like `"Smith, John"` stay together) |
+| Markdown or text tables | `\|` pipes (the `---` lines are dropped) |
+| Columns lined up with spaces, e.g. copied from a PDF | 2 or more spaces |
+| Statement lines like `01/03 Rent payment 1,200.00 (204.50)` | Dates and numbers at the start or end of each line |
+| `Name: Jane` lists | Label and value |
+
+If it guesses wrong, choose the separator yourself from the **Split columns by** menu.
+
+**Upload PDF:**
 
 - Each table goes on its own sheet (`Page 1 Table 1`, `Page 1 Table 2`, ...), or all on one sheet with `--single-sheet`.
 - Numbers become real numeric cells: `1,250.50` → 1250.5, `(4.00)` → -4, `$9` → 9, `15%` → 0.15.
@@ -23,13 +38,13 @@ Or install the `pdf2excel` command itself:
 pip install .
 ```
 
-## Upload in your browser
+## Use it in your browser
 
 ```bash
 python -m pdf2excel.web
 ```
 
-Then open http://127.0.0.1:5000, drop in a PDF and click **Convert to Excel**. The `.xlsx` file downloads straight away. Press Ctrl+C in the terminal to stop the page.
+Then open http://127.0.0.1:5000. Use the **Paste text** tab to paste text, or the **Upload PDF** tab to drop in a PDF and click **Convert to Excel**. The `.xlsx` file downloads straight away. Press Ctrl+C in the terminal to stop the page.
 
 The page runs only on your own computer, so your PDFs are never sent anywhere else.
 
