@@ -15,6 +15,8 @@ Turns pasted text or PDF tables into tidy Excel (`.xlsx`) spreadsheets.
 
 If it guesses wrong, choose the separator yourself from the **Split columns by** menu.
 
+To convert something else, copy it and click **Paste new data**: it replaces the old text and starts fresh with automatic detection. **Start over** clears everything.
+
 **Upload PDF:**
 
 - Each table goes on its own sheet (`Page 1 Table 1`, `Page 1 Table 2`, ...), or all on one sheet with `--single-sheet`.

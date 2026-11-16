@@ -62,6 +62,11 @@ PAGE = """<!doctype html>
   button.go { margin-top:18px; width:100%; padding:12px; border:0; border-radius:8px;
               background:var(--accent); color:#fff; font:inherit; font-weight:600; cursor:pointer; }
   button.go:disabled { opacity:.5; cursor:default; }
+  .actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+  .actions button.go { margin-top:0; flex:1 1 220px; width:auto; }
+  button.secondary { padding:12px 16px; border:1px solid var(--line); border-radius:8px; background:var(--card);
+                     color:var(--text); font:inherit; font-weight:600; cursor:pointer; flex:0 1 auto; }
+  button.secondary:hover { border-color:var(--accent); }
   .status { margin-top:14px; min-height:1.4em; font-size:.92rem; }
   .status.error { color:var(--error); }
   .status.ok { color:var(--accent); }
@@ -109,7 +114,11 @@ PAGE = """<!doctype html>
     <div class="previewHead"><h2>Preview</h2><span id="summary"></span></div>
     <div class="empty" id="emptyMsg">Your spreadsheet will appear here as you paste.</div>
     <div class="preview" id="preview"></div>
-    <button class="go" id="textGo" disabled>Download Excel</button>
+    <div class="actions">
+      <button class="go" id="textGo" disabled>Download Excel</button>
+      <button class="secondary" id="pasteNew" title="Replace everything with what you've copied">Paste new data</button>
+      <button class="secondary" id="startOver" title="Clear the text and preview">Start over</button>
+    </div>
     <div class="status" id="textStatus" role="status"></div>
   </section>
 
@@ -204,6 +213,44 @@ $('text').addEventListener('input', () => { userTouchedHeader = false; schedule(
 $('delim').addEventListener('change', refresh);
 $('textKeep').addEventListener('change', refresh);
 $('hasHeader').addEventListener('change', () => { userTouchedHeader = true; if (parsed) renderPreview(parsed); });
+
+function resetText(newText) {
+  clearTimeout(timer);
+  parsed = null;
+  userTouchedHeader = false;
+  $('delim').value = 'auto';
+  $('textKeep').checked = false;
+  $('hasHeader').checked = true;
+  $('text').value = newText || '';
+  setStatus($('textStatus'), '');
+  renderPreview({ rows: [] });
+  $('preview').scrollTop = 0;
+  if (newText) refresh();
+  $('text').focus();
+}
+$('startOver').addEventListener('click', () => resetText(''));
+$('pasteNew').addEventListener('click', async () => {
+  try {
+    const clip = await navigator.clipboard.readText();
+    if (!clip.trim()) throw new Error('empty');
+    resetText(clip);
+  } catch (e) {
+    // clipboard blocked or empty: clear the box so the user can paste with Ctrl+V
+    resetText('');
+    setStatus($('textStatus'), e.message === 'empty'
+      ? 'Your clipboard is empty. Copy some data, then try again.'
+      : 'Cleared. Press Ctrl+V to paste your new data.');
+  }
+});
+// pasting over a box that already holds data replaces it and starts fresh
+$('text').addEventListener('paste', e => {
+  const box = $('text');
+  const all = box.selectionStart === 0 && box.selectionEnd === box.value.length;
+  if (box.value.trim() && all) {
+    e.preventDefault();
+    resetText(e.clipboardData.getData('text'));
+  }
+});
 
 $('textGo').addEventListener('click', async () => {
   $('textGo').disabled = true;
